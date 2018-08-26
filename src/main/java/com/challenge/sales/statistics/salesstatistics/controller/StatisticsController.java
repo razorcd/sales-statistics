@@ -17,6 +17,11 @@ public class StatisticsController {
         this.statisticService = statisticService;
     }
 
+    /**
+     * Get statistics for recent sale amounts.
+     *
+     * @return [Statistics] statistics for latest sales amount.
+     */
     @GetMapping
     public Statistic getStatistics() {
         return statisticService.getStatistic();
