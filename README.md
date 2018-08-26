@@ -2,17 +2,21 @@
 # Solution
 
 I used Spring MVC to expose the Rest API. The application is a hexagonal layered architecture implemented following DDD. I used a functional programming style where applicable. All domain objects are immutable.
-To accept a very `high throughput`, the in memory storage is a group of multiple `ConcurrentQueues`. Adding new sales amounts will just round robin through the queue group. This will reduce locking the storage per thread.
-Adding new amounts will push to the start of a queue. A scheduler will run to clean old amounts and it will pull from the ending side of the queue. This way time and space complexity is at minimum.    
+
+To accept a very `high throughput`, the in memory storage is a group of multiple `ConcurrentQueues`. Adding new sales amounts will just `round robin` through the queue group (see `SalesRepository`). This will reduce locking the storage per thread when adding amounts and multithreading can be used to calculate statistics.
+Adding new amounts will push to the start of a queue. 
+
+A scheduler will run to remove old amounts and it will pull from the ending side of the queue. This way time and space complexity is at minimum. No traversing of the entire queue is needed.    
+
 The workflow I followed was TDD (plan small and red, green, refactor) and tests were written using BDD. 
 
 
 ```
-No traversing of entire queue is needed.
-                              ________________________________________
-                             |                                        |
-pull old Amounts    <--------|             Amount queue               |<-------- add new Amounts
-until a new one is found     |________________________________________|
+No traversing of entire queue is needed:
+                              _____________________________________
+                             |                                     |
+pull old Amounts    <--------|     Amounts queue valid for 60s     |<-------- add new Amounts
+until a new one is found     |_____________________________________|
 ```
 
 
@@ -21,10 +25,18 @@ until a new one is found     |________________________________________|
 
 Limited `max allocated memory` is `64Mb`. Can be changed in the pom.xml file.
 
-To stress test the application I used JMeter. Find the JMeter configuration in `stressTest_jmeter.jmx` file.
+To stress test the application I used `JMeter`. Find the JMeter configuration in `stressTest_jmeter.jmx` file. JMeter is set to POST 1mil random Amounts per minute. And also GET statistics every second.  
 
-The app stabilizes at a throughput of 500 000 requests/minute on my system with the limited max allocated memory.
+The app stabilizes at a throughput of 500 000 requests/minute on my own system with the `64Mb` limited max allocated memory and development environment.
+
+Increasing the allocated memory will allow a throughput of over 2 000 000 req/min.
    
+
+
+## Setup
+
+- run tests: `mvn test` or `mvn clean install` to cleanup, run tests and compile.
+- start app: `mvn spring-boot:run`
 
 
 ## Requests
@@ -50,21 +62,10 @@ Response: 200 OK
     "average_amount_per_order": "22.78"
 }
 ```
-This will also log the current state of the stored sale amounts collection:
+
+A scheduler will log the count of recent stored amounts:
+
 ```
-Calculating statistics for sales between 2018-08-26T17:22:03.956 and 2018-08-26T17:23:03.956. Total sales amount currently stored: 9
+Count recent sales amounts currently stored: 532185
 ```
-
-
-## Setup
-
-- run tests: `mvn test` or `mvn clean install` to cleanup, run tests and compile.
-- start app: `mvn spring-boot:run`
-
-
-## Progress
-
-First implementation was handling around 200k sales per minute.
-After optimising by adding static types, concurrent storage, cleanup scheduler, limit logging i got it to stabilize at 450k sales per minute. 
-
 

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.challenge.sales.statistics</groupId>
-    <artifactId>sales-statistics</artifactId>
+    <artifactId>salesstats-cristiand</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
