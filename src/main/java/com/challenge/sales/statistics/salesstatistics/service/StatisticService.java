@@ -38,22 +38,21 @@ public class StatisticService {
      */
     public Statistic getStatistic() {
         Queue<Amount> saleAmounts = salesRepository.getAmounts();
-        Instant now = Instant.now(clock);
-        long fromCreatedAt = now.minusSeconds(periodInSec).toEpochMilli();
 
-//        cleanup. TODO: move to scheduler. Convert to streams?
-        while (!saleAmounts.isEmpty() && saleAmounts.peek().isBefore(fromCreatedAt)) {
-            saleAmounts.poll();
-        }
-
-        LOGGER.info("Calculating sales statistics. Total sales amount currently stored: {}", saleAmounts.size());
-
-        Statistic finalStatistic = saleAmounts.stream()
-                .filter(amount -> amount.isAfter(fromCreatedAt))
-                .reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
+        Statistic finalStatistic = getStatisticsFrom(saleAmounts);
 
         return Optional.ofNullable(finalStatistic)
                 .orElse(Statistic.ZERO);
+    }
+
+    private Statistic getStatisticsFrom(Queue<Amount> saleAmounts) {
+        Instant now = Instant.now(clock);
+        long fromCreatedAt = now.minusSeconds(periodInSec).toEpochMilli();
+
+        LOGGER.info("Calculating sales statistics. Total sales amount currently stored: {}", saleAmounts.size());
+        return saleAmounts.stream()
+                .filter(amount -> amount.isAfter(fromCreatedAt))
+                .reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
     }
 
 }

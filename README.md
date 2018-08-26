@@ -34,3 +34,11 @@ Calculating statistics for sales between 2018-08-26T17:22:03.956 and 2018-08-26T
 
 - run tests: `mvn test` or `mvn clean install` to cleanup, run tests and compile.
 - start app: `mvn spring-boot:run`
+
+
+## Progress
+
+First implementation was handling around 200k sales per minute.
+After optimising by adding static types, concurrent storage, cleanup scheduler, limit logging i got it to stabilize at 450k sales per minute. 
+
+
