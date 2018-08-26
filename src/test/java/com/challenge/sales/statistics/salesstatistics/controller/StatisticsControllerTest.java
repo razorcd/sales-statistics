@@ -16,9 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -75,7 +73,7 @@ public class StatisticsControllerTest {
     public void should_store_amounts_and_retrieve_statistics_only_for_last_period() throws Exception {
         //given
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=2.15"));
-        Thread.sleep(600); //TODO: replace with time travel
+        Thread.sleep(600);
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=3.50"));
         Thread.sleep(600);
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=5.05"));

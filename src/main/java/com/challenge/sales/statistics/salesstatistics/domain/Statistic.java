@@ -12,7 +12,6 @@ import java.util.Objects;
 public class Statistic {
 
     public static final Statistic ZERO = new Statistic(0d, 0);
-//    private static final int DECIMAL_SCALE = 2;
 
     /**
      * The sum of the values for the recent sale amounts.
@@ -52,6 +51,17 @@ public class Statistic {
         if (salesAmountCount==0) return String.format("%.2f", 0d);
 
         return String.format("%.2f", getAverageSales());
+    }
+
+    /**
+     * Get a new statistic instance by adding the specified statistic to current one.
+     *
+     * @param statistic the new statistic to add to current one.
+     * @return [Statistic] the summed statistic from current and specified one.
+     */
+    public Statistic add(Statistic statistic) {
+        return new Statistic(totalSalesAmount+statistic.getTotalSalesAmount(),
+                             salesAmountCount+statistic.getSalesAmountCount());
     }
 
     /**

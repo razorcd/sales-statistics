@@ -23,12 +23,20 @@ public class CleanupOldAmounts {
 
     @Autowired
     private SalesRepository salesRepository;
+
     @Autowired
     Clock clock;
 
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 10000)
     public void cleanOldAmounts() {
-        LOGGER.info("Cleaning up old amounts.");
         salesRepository.cleanOld(Instant.now(clock).minusSeconds(periodInSec).toEpochMilli());
+        LOGGER.info("Cleaning up old amounts.");
+        displayCount();
+    }
+
+//    @Scheduled(fixedRate = 10000)
+    public void displayCount() {
+        salesRepository.cleanOld(Instant.now(clock).minusSeconds(periodInSec).toEpochMilli());
+        LOGGER.info("Total recent sales amounts currently stored: {}", salesRepository.count());
     }
 }

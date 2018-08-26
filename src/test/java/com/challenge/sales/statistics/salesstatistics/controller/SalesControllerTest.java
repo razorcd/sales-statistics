@@ -17,10 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
 
@@ -36,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({SalesStatisticsApplication.class})
 public class SalesControllerTest {
 
+    //Overwrite Clock Bean
     @Configuration
     static class Config {
         @Bean

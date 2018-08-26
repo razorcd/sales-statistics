@@ -10,15 +10,12 @@ public class Amount {
     /**
      * The sales amount value.
      */
-    private double value;
+    private final double value;
 
     /**
      * The time when the amount is created in ms.
      */
-    private long createdAt;
-
-    public Amount() {
-    }
+    private final long createdAt;
 
     public Amount(double value, long createdAt) {
         this.value = value;
@@ -49,17 +46,10 @@ public class Amount {
         return value;
     }
 
-    public void setValue(double value) {
-        this.value = value;
-    }
-
     public long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
-    }
 
     @Override
     public boolean equals(Object o) {

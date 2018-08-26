@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -37,9 +38,9 @@ public class StatisticService {
      * @return [Statistic] get recent statistics.
      */
     public Statistic getStatistic() {
-        Queue<Amount> saleAmounts = salesRepository.getAmounts();
+        List<Statistic> statisticList = salesRepository.onEachQueueExecute(this::getStatisticsFrom);
 
-        Statistic finalStatistic = getStatisticsFrom(saleAmounts);
+        Statistic finalStatistic = statisticList.stream().reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
 
         return Optional.ofNullable(finalStatistic)
                 .orElse(Statistic.ZERO);
@@ -49,7 +50,6 @@ public class StatisticService {
         Instant now = Instant.now(clock);
         long fromCreatedAt = now.minusSeconds(periodInSec).toEpochMilli();
 
-        LOGGER.info("Calculating sales statistics. Total sales amount currently stored: {}", saleAmounts.size());
         return saleAmounts.stream()
                 .filter(amount -> amount.isAfter(fromCreatedAt))
                 .reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);

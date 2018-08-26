@@ -3,6 +3,7 @@ com:
     sales:
       statistics:
         period_in_sec: 60
+
 debug: false
 logging:
   level:

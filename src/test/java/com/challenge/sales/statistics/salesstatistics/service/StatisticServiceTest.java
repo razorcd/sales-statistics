@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 public class StatisticServiceTest {
 
-
     private StatisticService statisticService;
     private SalesRepository salesRepository;
 
