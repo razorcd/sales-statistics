@@ -29,3 +29,8 @@ This will also log the current state of the stored sale amounts collection:
 Calculating statistics for sales between 2018-08-26T17:22:03.956 and 2018-08-26T17:23:03.956. Total sales amount currently stored: 9
 ```
 
+
+## Setup
+
+- run tests: `mvn test` or `mvn clean install` to cleanup, run tests and compile.
+- start app: `mvn spring-boot:run`
