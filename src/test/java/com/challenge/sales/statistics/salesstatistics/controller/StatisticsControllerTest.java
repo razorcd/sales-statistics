@@ -74,7 +74,7 @@ public class StatisticsControllerTest {
     public void should_store_amounts_and_retrieve_statistics_only_for_last_period() throws Exception {
         //given
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=2.15"));
-        Thread.sleep(600);
+        Thread.sleep(600); //TODO: replace with time travel
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=3.50"));
         Thread.sleep(600);
         mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=5.05"));

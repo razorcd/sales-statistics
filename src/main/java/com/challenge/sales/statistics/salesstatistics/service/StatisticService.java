@@ -40,7 +40,7 @@ public class StatisticService {
         LocalDateTime now = LocalDateTime.now(clock);
         LocalDateTime fromCreatedAt = now.minusSeconds(periodInSec);
 
-        LOGGER.debug("Calculating statistics for sales between {} and {}. Total sales amount currently stored: {}", fromCreatedAt, now, saleAmounts.size());
+        LOGGER.info("Calculating statistics for sales between {} and {}. Total sales amount currently stored: {}", fromCreatedAt, now, saleAmounts.size());
 
         Statistic finalStatistic = saleAmounts.stream()
                 .filter(amount -> amount.getCreatedAt().isAfter(fromCreatedAt))
