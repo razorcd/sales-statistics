@@ -30,7 +30,7 @@ public class SalesController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, params = {"sales_amount!="})
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void postSales(@RequestParam(value = "sales_amount") BigDecimal salesAmount) {
+    public void postSales(@RequestParam(value = "sales_amount") double salesAmount) {
         salesService.store(salesAmount);
     }
 }

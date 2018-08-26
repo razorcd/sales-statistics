@@ -1,7 +1,5 @@
 package com.challenge.sales.statistics.salesstatistics.domain;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -12,34 +10,54 @@ public class Amount {
     /**
      * The sales amount value.
      */
-    private BigDecimal value;
+    private double value;
 
     /**
-     * The time when the amount is created.
+     * The time when the amount is created in ms.
      */
-    private LocalDateTime createdAt;
+    private long createdAt;
 
     public Amount() {
     }
 
-    public Amount(BigDecimal value, LocalDateTime createdAt) {
+    public Amount(double value, long createdAt) {
         this.value = value;
         this.createdAt = createdAt;
     }
 
-    public BigDecimal getValue() {
+    /**
+     * Check if current amount was created before specified time in ms.
+     *
+     * @param timeInMs the time in ms to compare with.
+     * @return [boolean] if amount was created before specified time.
+     */
+    public boolean isBefore(long timeInMs) {
+        return createdAt <= timeInMs;
+    }
+
+    /**
+     * Check if current amount was created after specified time in ms.
+     *
+     * @param timeInMs the time in ms to compare with.
+     * @return [boolean] if amount was created after specified time.
+     */
+    public boolean isAfter(long timeInMs) {
+        return createdAt > timeInMs;
+    }
+
+    public double getValue() {
         return value;
     }
 
-    public void setValue(BigDecimal value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public long getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }
 

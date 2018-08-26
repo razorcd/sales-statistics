@@ -30,9 +30,9 @@ public class SalesServiceTest {
     @Test
     public void shouldStoreSalesAmount() {
 
-        salesService.store(BigDecimal.TEN);
+        salesService.store(10d);
 
-        Amount expectedAmount = new Amount(BigDecimal.TEN, LocalDateTime.now(clock));
+        Amount expectedAmount = new Amount(10d, Instant.now(clock).toEpochMilli());
         assertThat("Should store the amount.", salesRepository.getAmounts(), hasItems(expectedAmount));
     }
 

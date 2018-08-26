@@ -67,7 +67,7 @@ public class SalesControllerTest {
                 .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
                 .andExpect(status().isAccepted());
 
-        Amount amount = new Amount(new BigDecimal("10.00"), LocalDateTime.now(clock));
+        Amount amount = new Amount(10.00d, Instant.now(clock).toEpochMilli());
         assertThat("Should persist amount at current time.", salesRepository.getAmounts(), hasItems(amount));
     }
 

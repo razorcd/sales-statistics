@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Queue;
 
 @Service
 public class StatisticService {
@@ -36,17 +37,23 @@ public class StatisticService {
      * @return [Statistic] get recent statistics.
      */
     public Statistic getStatistic() {
-        List<Amount> saleAmounts = salesRepository.getAmounts();
-        LocalDateTime now = LocalDateTime.now(clock);
-        LocalDateTime fromCreatedAt = now.minusSeconds(periodInSec);
+        Queue<Amount> saleAmounts = salesRepository.getAmounts();
+        Instant now = Instant.now(clock);
+        long fromCreatedAt = now.minusSeconds(periodInSec).toEpochMilli();
 
-        LOGGER.info("Calculating statistics for sales between {} and {}. Total sales amount currently stored: {}", fromCreatedAt, now, saleAmounts.size());
+//        cleanup. TODO: move to scheduler. Convert to streams?
+        while (!saleAmounts.isEmpty() && saleAmounts.peek().isBefore(fromCreatedAt)) {
+            saleAmounts.poll();
+        }
+
+        LOGGER.info("Calculating sales statistics. Total sales amount currently stored: {}", saleAmounts.size());
 
         Statistic finalStatistic = saleAmounts.stream()
-                .filter(amount -> amount.getCreatedAt().isAfter(fromCreatedAt))
+                .filter(amount -> amount.isAfter(fromCreatedAt))
                 .reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
 
-        return finalStatistic;
+        return Optional.ofNullable(finalStatistic)
+                .orElse(Statistic.ZERO);
     }
 
 }

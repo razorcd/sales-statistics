@@ -3,8 +3,6 @@ package com.challenge.sales.statistics.salesstatistics.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 /**
@@ -13,14 +11,14 @@ import java.util.Objects;
  */
 public class Statistic {
 
-    public static final Statistic ZERO = new Statistic(BigDecimal.ZERO, 0);
-    private static final int DECIMAL_SCALE = 2;
-    private static final RoundingMode DECIMAL_ROUNDING = RoundingMode.HALF_DOWN;
+    public static final Statistic ZERO = new Statistic(0d, 0);
+//    private static final int DECIMAL_SCALE = 2;
+
     /**
      * The sum of the values for the recent sale amounts.
      */
     @JsonIgnore
-    private final BigDecimal totalSalesAmount;
+    private final double totalSalesAmount;
 
     /**
      * The count of the recent sale amounts.
@@ -28,12 +26,12 @@ public class Statistic {
     @JsonIgnore
     private final int salesAmountCount;
 
-    public Statistic(BigDecimal totalSalesAmount, int salesAmountCount) {
+    public Statistic(double totalSalesAmount, int salesAmountCount) {
         this.totalSalesAmount = totalSalesAmount;
         this.salesAmountCount = salesAmountCount;
     }
 
-    public BigDecimal getTotalSalesAmount() {
+    public double getTotalSalesAmount() {
         return totalSalesAmount;
     }
 
@@ -43,7 +41,7 @@ public class Statistic {
 
     @JsonProperty("total_sales_amount")
     public String getTotalSalesAmountString() {
-        return totalSalesAmount.setScale(DECIMAL_SCALE, DECIMAL_ROUNDING).toString();
+        return String.format("%.2f", totalSalesAmount);
     }
 
     /**
@@ -51,9 +49,9 @@ public class Statistic {
      */
     @JsonProperty("average_amount_per_order")
     public String getAverageAmountPerOrder() {
-        if (salesAmountCount==0) return BigDecimal.ZERO.setScale(DECIMAL_SCALE, DECIMAL_ROUNDING).toString();
+        if (salesAmountCount==0) return String.format("%.2f", 0d);
 
-        return totalSalesAmount.divide(BigDecimal.valueOf(salesAmountCount), DECIMAL_SCALE, DECIMAL_ROUNDING).toString();
+        return String.format("%.2f", getAverageSales());
     }
 
     /**
@@ -63,7 +61,11 @@ public class Statistic {
      * @return [Statistic] a new updated instance
      */
     public Statistic add(Amount amount) {
-        return new Statistic(totalSalesAmount.add(amount.getValue()), salesAmountCount+1);
+        return new Statistic(totalSalesAmount+amount.getValue(), salesAmountCount+1);
+    }
+
+    private double getAverageSales() {
+        return totalSalesAmount/salesAmountCount;
     }
 
     @Override

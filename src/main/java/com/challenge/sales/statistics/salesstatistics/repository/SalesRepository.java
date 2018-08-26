@@ -3,19 +3,19 @@ package com.challenge.sales.statistics.salesstatistics.repository;
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Repository
 public class SalesRepository {
 
-    private final List<Amount> amounts;
+    private final Queue<Amount> amounts;
 
     public SalesRepository() {
-        amounts = new CopyOnWriteArrayList<>();
+        amounts = new ConcurrentLinkedQueue<>();
     }
 
-    public List<Amount> getAmounts() {
+    public Queue<Amount> getAmounts() {
         return amounts;
     }
 

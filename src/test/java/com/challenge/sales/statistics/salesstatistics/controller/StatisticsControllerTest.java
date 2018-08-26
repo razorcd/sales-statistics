@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -52,8 +53,8 @@ public class StatisticsControllerTest {
     public void getStatistics() throws Exception {
         //given
 
-        Amount amount1 = new Amount(new BigDecimal(5.43), LocalDateTime.now());
-        Amount amount2 = new Amount(new BigDecimal(14.98), LocalDateTime.now());
+        Amount amount1 = new Amount(5.43d, Instant.now().toEpochMilli());
+        Amount amount2 = new Amount(14.98d, Instant.now().toEpochMilli());
         salesRepository.saveAmount(amount1);
         salesRepository.saveAmount(amount2);
 
@@ -89,7 +90,7 @@ public class StatisticsControllerTest {
         //then
         StatisticsResponseDto responseDto = objectMapper.readValue(response.getResponse().getContentAsString(), StatisticsResponseDto.class);
         assertEquals("Should return correct statistics data.",
-                new StatisticsResponseDto("8.55", "4.27"), responseDto);
+                new StatisticsResponseDto("8.55", "4.28"), responseDto);
     }
 
 }
