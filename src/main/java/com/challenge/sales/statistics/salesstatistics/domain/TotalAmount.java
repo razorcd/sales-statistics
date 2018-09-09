@@ -43,6 +43,11 @@ public class TotalAmount {
         return String.format("%.2f", (double)value / 100);
     }
 
+    @JsonProperty("total_sales_included_count")
+    public String getSalesAmountCountString() {
+        return String.valueOf(salesAmountCount);
+    }
+
     /**
      * The average value of the recent sales amounts.
      */

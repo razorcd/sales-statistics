@@ -1,3 +1,37 @@
+# Requirements
+
+Build a microservice that will calculate real-time statistics of item sales on a marketplace platform. This microservice will feed data to a dashboard installed in a business team’s room.
+The microservice shall have a REST interface with two endpoints. The first endpoint will be called by the checkout service whenever a new payment is received and the second endpoint will provide statistics about the total order amount and average amount per order for the last 60 seconds. (Orders between ​ t ​ and ​ t ​ - 60 sec, given ​ t ​ = request time)
+
+Specifications for the requested endpoints are as follows:
+
+#### Transactions
+
+```
+Sales
+URL:​ /sales
+Method: ​ POST
+Content-Type:​ application/x-www-form-urlencodedParameters:
+sales_amount: Number String (e.g. “5.00”)
+Return HTTP Code:​ 202 Accepted
+Return Body: ​ blank
+```
+```
+Statistics
+URL:​ /statistics
+Method: ​ GET
+Parameters: ​ none
+Return HTTP Code:​ 200 OK
+Return Body:
+{
+  total_sales_amount: “52100.00”,
+  average_amount_per_order: “32.14”
+}
+```
+
+Around 250.000 items are sold each minute. So, your service must expect a high amount of transaction data per minute and on several TCP connections in parallel
+
+You can keep and process data in main memory. You are not allowed to use persistent storage. If the service should be restarted, losing this in-memory data is not a big problem since the risk is only to lose sales statistics for a couple of seconds, then new orders will arrive and your service will again show statistics.
 
 # Solution
 
@@ -27,16 +61,19 @@ Limited `max allocated memory` is `64Mb`. Can be changed in the pom.xml file.
 
 To stress test the application I used `JMeter`. Find the JMeter configuration in `stressTest_jmeter.jmx` file. JMeter is set to POST 1mil random Amounts per minute. And also GET statistics every second.  
 
-The app stabilizes at a throughput of 500 000 requests/minute on my own system with the `64Mb` limited max allocated memory and development environment.
+The app stabilizes at a throughput of 600 000 requests/minute on my own system with the `64Mb` limited max HEAP allocated memory.
 
-Increasing the allocated memory will allow a throughput of over 2 000 000 req/min.
+Increasing the allocated memory will allow a throughput of over 4 000 000 req/min.
    
 
 
 ## Setup
 
-- run tests: `mvn test` or `mvn clean install` to cleanup, run tests and compile.
-- start app: `mvn spring-boot:run`
+Execute in order:
+- `mvn clean test` to cleanup and run tests. 
+- `mvn clean pakcage` to build `jar` 
+- `java -Xmx64m -jar target/salesstats-cristiand-0.0.1-SNAPSHOT.jar` to start app with 64Mb max HEAP size
+- `./jmeter -n -t [path-to-file]/stressTest_jmeter.jmx` to start headless JMeter and shoot millions requests to app API 
 
 
 ## Requests
@@ -58,14 +95,18 @@ curl -X GET http://localhost:8080/statistics
 
 Response: 200 OK
 {
-    "total_sales_amount": "68.35",
-    "average_amount_per_order": "22.78"
-}
+    "total_sales_amount":"66949695.00",
+    "total_sales_included_count":"669270",
+    "average_amount_per_order":"100.03"
 ```
 
-A scheduler will log the count of recent stored amounts:
+A scheduler will log the count of recent stored amounts just for demo purpose:
 
 ```
-Count recent sales amounts currently stored: 532185
+Count recent sales amounts currently stored: 1536122
 ```
 
+# Todo
+
+- [ ] add thread pool executor to parallel stream
+- [ ] try random queue index instead of round robin (so threads don't wait for AtomicLong too)

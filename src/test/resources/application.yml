@@ -2,4 +2,8 @@ com:
   challenge:
     sales:
       statistics:
-        period_in_sec: 1
+        period_in_sec: 3
+#spring:
+#  test:
+#    mockmvc:
+#      print: none
