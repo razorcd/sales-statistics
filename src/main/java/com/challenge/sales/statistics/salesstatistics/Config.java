@@ -14,6 +14,11 @@ public class Config {
         return new LocalValidatorFactoryBean();
     }
 
+    /**
+     * Clock bean to use all over the application.
+     * External dependency, can be mocked in tests.
+     * @return clock
+     */
     @Bean
     Clock setClock() {
         return Clock.systemDefaultZone();

@@ -1,3 +1,4 @@
+
 # Requirements
 
 Build a microservice that will calculate real-time statistics of item sales on a marketplace platform. This microservice will feed data to a dashboard installed in a business team’s room.
