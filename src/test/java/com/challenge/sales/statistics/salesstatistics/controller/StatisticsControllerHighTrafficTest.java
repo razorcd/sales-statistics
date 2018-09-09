@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
@@ -18,6 +19,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,8 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
-@AutoConfigureMockMvc
-public class StatisticsControllerTest {
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
+public class StatisticsControllerHighTrafficTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -48,13 +52,17 @@ public class StatisticsControllerTest {
     }
 
     @Test
-    public void getStatistics() throws Exception {
+    public void should_store_a_lot_of_amounts_and_retreive_precise_statistics() throws Exception {
         //given
-
-        Amount amount1 = new Amount(543L, Instant.now().toEpochMilli());
-        Amount amount2 = new Amount(1498L, Instant.now().toEpochMilli());
-        salesRepository.saveAmount(amount1);
-        salesRepository.saveAmount(amount2);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        executorService.submit(() -> this.postALotOfSales(2000, "123456.78"));
+        executorService.submit(() -> this.postALotOfSales(2000, "123456.78"));
+        executorService.submit(() -> this.postALotOfSales(2000, "123.45"));
+        executorService.submit(() -> this.postALotOfSales(2000, "123.45"));
+        executorService.submit(() -> this.postALotOfSales(2000, "0.12"));
+        executorService.submit(() -> this.postALotOfSales(2000, "0.12"));
+        executorService.shutdown();
+        executorService.awaitTermination(10, TimeUnit.SECONDS);
 
         //when
         MvcResult response = mockMvc.perform(get("/statistics")
@@ -66,28 +74,17 @@ public class StatisticsControllerTest {
         //then
         StatisticsResponseDto responseDto = objectMapper.readValue(response.getResponse().getContentAsString(), StatisticsResponseDto.class);
         assertEquals("Should return correct statistics data.",
-                new StatisticsResponseDto("20.41", "10.21"), responseDto);
+                new StatisticsResponseDto("494321400.00", "41193.45"), responseDto);
     }
 
-    @Test
-    public void should_store_amounts_and_retrieve_statistics_only_for_last_period() throws Exception {
-        //given
-        mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=2.15"));
-        Thread.sleep(1600);
-        mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=3.50"));
-        Thread.sleep(1600);
-        mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount=5.05"));
-
-        //when
-        MvcResult response = mockMvc.perform(get("/statistics")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        //then
-        StatisticsResponseDto responseDto = objectMapper.readValue(response.getResponse().getContentAsString(), StatisticsResponseDto.class);
-        assertEquals("Should return correct statistics data.",
-                new StatisticsResponseDto("8.55", "4.28"), responseDto);
+    private void postALotOfSales(int postCount, String amount) {
+        try {
+            for (int i = 0; i < postCount; i++) {
+                mockMvc.perform(post("/sales").contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE).content("sales_amount="+amount));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while posting sales from multiple threads.", e);
+        }
     }
+
 }

@@ -23,10 +23,10 @@ public class SalesService {
     /**
      * Store an sales amount value.
      *
-     * @param amountValue the sales amount value to store.
+     * @param amountValueCents the sales amount value in cents to store.
      */
-    public void store(double amountValue) {
-        Amount amount = new Amount(amountValue, Instant.now(clock).toEpochMilli());
+    public void store(long amountValueCents) {
+        Amount amount = new Amount(amountValueCents, Instant.now(clock).toEpochMilli());
 
         salesRepository.saveAmount(amount);
     }

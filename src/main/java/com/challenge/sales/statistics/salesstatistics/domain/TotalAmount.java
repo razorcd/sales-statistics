@@ -11,13 +11,13 @@ import java.util.Objects;
  */
 public class TotalAmount {
 
-    public static final TotalAmount ZERO = new TotalAmount(0d, 0);
+    public static final TotalAmount ZERO = new TotalAmount(0L, 0);
 
     /**
-     * The total sum of the sale amounts.
+     * The total sum of the sale amounts in cents.
      */
     @JsonIgnore
-    private final double value;
+    private final long value;
 
     /**
      * The count of the summed sale amounts.
@@ -25,12 +25,12 @@ public class TotalAmount {
     @JsonIgnore
     private final long salesAmountCount;
 
-    public TotalAmount(double value, long salesAmountCount) {
+    public TotalAmount(long value, long salesAmountCount) {
         this.value = value;
         this.salesAmountCount = salesAmountCount;
     }
 
-    public double getValue() {
+    public long getValue() {
         return value;
     }
 
@@ -40,7 +40,7 @@ public class TotalAmount {
 
     @JsonProperty("total_sales_amount")
     public String getValueString() {
-        return String.format("%.2f", value);
+        return String.format("%.2f", (double)value / 100);
     }
 
     /**
@@ -48,33 +48,33 @@ public class TotalAmount {
      */
     @JsonProperty("average_amount_per_order")
     public String getAverageValueString() {
-        return String.format("%.2f", getAverageSales());
+        return String.format("%.2f", getAverageSales() / 100);
     }
 
     /**
-     * Get a new statistic instance by adding the specified statistic to current one.
+     * Get a new TotalAmount instance by including the specified Amount.
      *
-     * @param statistic the new statistic to add to current one.
-     * @return [Statistic] the summed statistic from current and specified one.
-     */
-    public TotalAmount add(TotalAmount statistic) {
-        return new TotalAmount(value + statistic.getValue(),
-                             salesAmountCount + statistic.getSalesAmountCount());
-    }
-
-    /**
-     * Get a new statistic instance by including the specified amount.
-     *
-     * @param amount the amount to include in the next statistic calculation.
-     * @return [Statistic] a new updated instance
+     * @param amount the amount to include in the next total amount calculation.
+     * @return {@link TotalAmount} a new updated instance
      */
     public TotalAmount add(Amount amount) {
         return new TotalAmount(value +amount.getValue(), salesAmountCount+1);
     }
 
+    /**
+     * Get a new TotalAmount instance by adding the specified TotalAmount to current one.
+     *
+     * @param totalAmount the new total amount to add to current one.
+     * @return {@link TotalAmount} the summed total amount from current and specified one.
+     */
+    public TotalAmount add(TotalAmount totalAmount) {
+        return new TotalAmount(value + totalAmount.getValue(),
+                             salesAmountCount + totalAmount.getSalesAmountCount());
+    }
+
     private double getAverageSales() {
         if (salesAmountCount==0) return 0;
-        else return value / salesAmountCount;
+        else return (double)value / salesAmountCount;
     }
 
     @Override

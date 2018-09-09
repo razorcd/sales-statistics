@@ -28,9 +28,9 @@ public class SalesServiceTest {
     @Test
     public void shouldStoreSalesAmount() {
 
-        salesService.store(10d);
+        salesService.store(10L);
 
-        Amount expectedAmount = new Amount(10d, Instant.now(clock).toEpochMilli());
+        Amount expectedAmount = new Amount(10L, Instant.now(clock).toEpochMilli());
         assertThat("Should store the amount.", salesRepository.getAmounts(), hasItems(expectedAmount));
     }
 

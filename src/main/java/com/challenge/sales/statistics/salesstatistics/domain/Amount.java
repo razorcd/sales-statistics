@@ -8,16 +8,16 @@ import java.util.Objects;
 public class Amount {
 
     /**
-     * The sales amount value.
+     * The sales amount value in cents.
      */
-    private final double value;
+    private final long value;
 
     /**
      * The time when the amount is created in ms.
      */
     private final long createdAt;
 
-    public Amount(double value, long createdAt) {
+    public Amount(long value, long createdAt) {
         this.value = value;
         this.createdAt = createdAt;
     }
@@ -42,7 +42,7 @@ public class Amount {
         return createdAt > timeInMs;
     }
 
-    public double getValue() {
+    public long getValue() {
         return value;
     }
 

@@ -36,8 +36,8 @@ public class StatisticServiceTest {
     @Test
     public void getRecentTotalAmount_whenNotEmpty() {
         //given
-        Amount amount1 = new Amount(11d, Instant.now(clock).toEpochMilli());
-        Amount amount2 = new Amount(9d, Instant.now(clock).toEpochMilli());
+        Amount amount1 = new Amount(11L, Instant.now(clock).toEpochMilli());
+        Amount amount2 = new Amount(9L, Instant.now(clock).toEpochMilli());
         salesRepository.saveAmount(amount1);
         salesRepository.saveAmount(amount2);
 
@@ -45,7 +45,7 @@ public class StatisticServiceTest {
         TotalAmount response = statisticService.getRecentTotalAmount();
 
         //then
-        assertEquals("Should return correct total amount.", new TotalAmount(20d, 2), response);
+        assertEquals("Should return correct total amount.", new TotalAmount(20L, 2), response);
     }
 
     @Test
@@ -54,14 +54,14 @@ public class StatisticServiceTest {
         TotalAmount response = statisticService.getRecentTotalAmount();
 
         //then
-        assertEquals("Should return correct zero total amount.", new TotalAmount(0d, 0), response);
+        assertEquals("Should return correct zero total amount.", new TotalAmount(0L, 0), response);
     }
 
     @Test
     public void getRecentTotalAmount_whenALotOfAmounts() {
         //given
         List<Amount> amountList = IntStream.range(0, 1_000_000)
-                .mapToObj(i -> new Amount(0.123_456_789_123_456_789d, Instant.now(clock).toEpochMilli()))
+                .mapToObj(i -> new Amount(123_456L, Instant.now(clock).toEpochMilli()))
                 .collect(Collectors.toList());
         amountList.forEach(amount -> salesRepository.saveAmount(amount));
 
@@ -69,6 +69,6 @@ public class StatisticServiceTest {
         TotalAmount response = statisticService.getRecentTotalAmount();
 
         //then
-        assertEquals("Should return correct total amount.", new TotalAmount(123_456.789_123_456_789d, 1_000_000), response);
+        assertEquals("Should return correct total amount.", new TotalAmount(123_456_000_000L, 1_000_000), response);
     }
 }
