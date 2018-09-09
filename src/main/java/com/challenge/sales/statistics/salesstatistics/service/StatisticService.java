@@ -3,12 +3,10 @@ package com.challenge.sales.statistics.salesstatistics.service;
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
 import com.challenge.sales.statistics.salesstatistics.domain.TotalAmount;
 import com.challenge.sales.statistics.salesstatistics.repository.SalesRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import com.challenge.sales.statistics.salesstatistics.utils.Properites;
+import org.rapidoid.annotation.Service;
 
+import javax.inject.Inject;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -18,15 +16,12 @@ import java.util.Queue;
 @Service
 public class StatisticService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
-
-    @Value("${com.challenge.sales.statistics.period_in_sec}")
-    private int periodInSec = 10;
+    private int periodInSec = Integer.parseInt(Properites.getProperties().getProperty("com.challenge.sales.statistics.period_in_sec"));
 
     private SalesRepository salesRepository;
     private Clock clock;
 
-    @Autowired
+    @Inject
     public StatisticService(SalesRepository salesRepository, Clock clock) {
         this.salesRepository = salesRepository;
         this.clock = clock;

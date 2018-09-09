@@ -1,14 +1,14 @@
 package com.challenge.sales.statistics.salesstatistics.repository;
 
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
-import org.springframework.stereotype.Repository;
 
+import javax.inject.Singleton;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Repository
+@Singleton
 public class SalesRepository {
 
     /**

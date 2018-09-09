@@ -1,3 +1,6 @@
+### This is the version using Rapidoid web framework. 
+The fully tested Spring version can be found in the other branch.
+
 # Requirements
 
 Build a microservice that will calculate real-time statistics of item sales on a marketplace platform. This microservice will feed data to a dashboard installed in a business team’s room.
@@ -57,14 +60,12 @@ until a new one is found     |_____________________________________|
 
 #### Stress test
 
-Limited `max allocated memory` is `64Mb`. Can be changed in the pom.xml file.
+Limited `max allocated memory` is `128Mb`. Can be changed in the java execution file file.
 
-To stress test the application I used `JMeter`. Find the JMeter configuration in `stressTest_jmeter.jmx` file. JMeter is set to POST 1mil random Amounts per minute. And also GET statistics every second.  
+To stress test the application I used `JMeter`. Find the JMeter configuration in `stressTest_jmeter.jmx` file. JMeter is set to POST 2mil random `Amounts` per minute. And also GET `statistics` every second.  
 
-The app stabilizes at a throughput of 600 000 requests/minute on my own system with the `64Mb` limited max HEAP allocated memory.
+The app stabilizes at a throughput of 900 000 requests/minute on my own system with the `128Mb` limited max HEAP allocated memory.
 
-Increasing the allocated memory will allow a throughput of over 4 000 000 req/min.
-   
 
 
 ## Setup
@@ -72,7 +73,7 @@ Increasing the allocated memory will allow a throughput of over 4 000 000 req/mi
 Execute in order:
 - `mvn clean test` to cleanup and run tests. 
 - `mvn clean pakcage` to build `jar` 
-- `java -Xmx64m -jar target/salesstats-cristiand-0.0.1-SNAPSHOT.jar` to start app with 64Mb max HEAP size
+- `java -Xmx128m -jar target/salesstats-cristiand-0.1.1-SNAPSHOT.jar` to start app with 128Mb max HEAP size
 - `./jmeter -n -t [path-to-file]/stressTest_jmeter.jmx` to start headless JMeter and shoot millions requests to app API 
 
 
@@ -105,8 +106,3 @@ A scheduler will log the count of recent stored amounts just for demo purpose:
 ```
 Count recent sales amounts currently stored: 1536122
 ```
-
-# Todo
-
-- [ ] add thread pool executor to parallel stream
-- [x] try random queue index instead of round robin (so threads don't wait for AtomicLong too)

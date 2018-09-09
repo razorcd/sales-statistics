@@ -2,19 +2,22 @@ package com.challenge.sales.statistics.salesstatistics.service;
 
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
 import com.challenge.sales.statistics.salesstatistics.repository.SalesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.challenge.sales.statistics.salesstatistics.utils.Properites;
+import org.rapidoid.annotation.Service;
 
+import javax.inject.Inject;
 import java.time.Clock;
 import java.time.Instant;
 
 @Service
 public class SalesService {
 
+    private int periodInSec = Integer.parseInt(Properites.getProperties().getProperty("com.challenge.sales.statistics.period_in_sec"));
+
     private SalesRepository salesRepository;
     private Clock clock;
 
-    @Autowired
+    @Inject
     public SalesService(SalesRepository salesRepository, Clock clock) {
         this.salesRepository = salesRepository;
         this.clock = clock;
@@ -29,5 +32,20 @@ public class SalesService {
         Amount amount = new Amount(amountValueCents, Instant.now(clock).toEpochMilli());
 
         salesRepository.saveAmount(amount);
+    }
+
+    /**
+     * Clean old sales amounts from repository to free memory.
+     */
+    public void cleanOldSales() {
+        salesRepository.cleanOld(Instant.now(clock).minusSeconds(periodInSec).toEpochMilli());
+    }
+
+    /**
+     * Get the count of the stored sale amounts.
+     * @return [int] count of sale amounts.
+     */
+    public int getSalesCount() {
+        return salesRepository.count();
     }
 }
