@@ -109,4 +109,4 @@ Count recent sales amounts currently stored: 1536122
 # Todo
 
 - [ ] add thread pool executor to parallel stream
-- [ ] try random queue index instead of round robin (so threads don't wait for AtomicLong too)
+- [x] try random queue index instead of round robin (so threads don't wait for AtomicLong too)

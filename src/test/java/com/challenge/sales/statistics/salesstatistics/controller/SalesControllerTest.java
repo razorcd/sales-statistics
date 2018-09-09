@@ -75,7 +75,7 @@ public class SalesControllerTest {
         mockMvc.perform(post("/sales")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .content("sales_amount="))
-                .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
+//                .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
                 .andExpect(status().isBadRequest());
 
         assertThat("Should not persist anything.", salesRepository.getAmounts(), empty());
@@ -86,7 +86,7 @@ public class SalesControllerTest {
         mockMvc.perform(post("/sales")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .content("sales_amount=not_a_number"))
-                .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
+//                .andDo(result -> Optional.ofNullable(result.getResolvedException()).ifPresent(Exception::printStackTrace))
                 .andExpect(status().isBadRequest());
 
         assertThat("Should not persist anything.", salesRepository.getAmounts(), empty());

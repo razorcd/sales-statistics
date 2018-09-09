@@ -3,12 +3,8 @@ package com.challenge.sales.statistics.salesstatistics.repository;
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -19,14 +15,8 @@ public class SalesRepository {
      * Holds a list of concurrent queues.
      * All sales are stored in separate concurrent queues
      * therefor intensive multi threaded writing will not block threads.
-     * Each <b>sale</b> will be written to the next queue defined by {@link SalesRepository#currentQueueIndex}
      */
     private final List<Queue<Amount>> amountsQueueList;
-
-    /**
-     * Index of current queue. Used to define the current queue while storing amounts.
-     */
-    private final AtomicLong currentQueueIndex;
 
     private final int queueCount;
 
@@ -43,7 +33,6 @@ public class SalesRepository {
                 new ConcurrentLinkedQueue<>(),
                 new ConcurrentLinkedQueue<>()
         );
-        this.currentQueueIndex = new AtomicLong(0L);
         this.queueCount = amountsQueueList.size();
     }
 
@@ -111,17 +100,8 @@ public class SalesRepository {
      * @return {@code Queue<Amount>} the current queue.
      */
     private Queue<Amount> getCurrentQueue() {
-        int queueIndex = getAndIncrementQueueIndex();
+        int queueIndex = new SplittableRandom().nextInt(queueCount);
 
         return amountsQueueList.get(queueIndex);
-    }
-
-    /**
-     * Get the index of the current queue to write to.
-     * It increments the current queue index using a round robin technique.
-     * @return [int] index of the queue that can be written to.
-     */
-    private int getAndIncrementQueueIndex() {
-        return (int) (currentQueueIndex.getAndIncrement() % queueCount);
     }
 }
