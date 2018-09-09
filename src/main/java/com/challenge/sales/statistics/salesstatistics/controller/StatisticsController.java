@@ -1,7 +1,7 @@
 package com.challenge.sales.statistics.salesstatistics.controller;
 
 
-import com.challenge.sales.statistics.salesstatistics.domain.Statistic;
+import com.challenge.sales.statistics.salesstatistics.domain.TotalAmount;
 import com.challenge.sales.statistics.salesstatistics.service.StatisticService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +23,8 @@ public class StatisticsController {
      * @return [Statistics] statistics for latest sales amount.
      */
     @GetMapping
-    public Statistic getStatistics() {
-        return statisticService.getStatistic();
+    public TotalAmount getStatistics() {
+        return statisticService.getRecentTotalAmount();
     }
 
 }

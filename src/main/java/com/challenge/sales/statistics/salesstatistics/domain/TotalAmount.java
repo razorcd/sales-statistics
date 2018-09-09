@@ -9,47 +9,45 @@ import java.util.Objects;
  * Represents a domain object containing statistics data for recent sale amounts.
  * Immutable object.
  */
-public class Statistic {
+public class TotalAmount {
 
-    public static final Statistic ZERO = new Statistic(0d, 0);
-
-    /**
-     * The sum of the values for the recent sale amounts.
-     */
-    @JsonIgnore
-    private final double totalSalesAmount;
+    public static final TotalAmount ZERO = new TotalAmount(0d, 0);
 
     /**
-     * The count of the recent sale amounts.
+     * The total sum of the sale amounts.
      */
     @JsonIgnore
-    private final int salesAmountCount;
+    private final double value;
 
-    public Statistic(double totalSalesAmount, int salesAmountCount) {
-        this.totalSalesAmount = totalSalesAmount;
+    /**
+     * The count of the summed sale amounts.
+     */
+    @JsonIgnore
+    private final long salesAmountCount;
+
+    public TotalAmount(double value, long salesAmountCount) {
+        this.value = value;
         this.salesAmountCount = salesAmountCount;
     }
 
-    public double getTotalSalesAmount() {
-        return totalSalesAmount;
+    public double getValue() {
+        return value;
     }
 
-    public int getSalesAmountCount() {
+    public long getSalesAmountCount() {
         return salesAmountCount;
     }
 
     @JsonProperty("total_sales_amount")
-    public String getTotalSalesAmountString() {
-        return String.format("%.2f", totalSalesAmount);
+    public String getValueString() {
+        return String.format("%.2f", value);
     }
 
     /**
      * The average value of the recent sales amounts.
      */
     @JsonProperty("average_amount_per_order")
-    public String getAverageAmountPerOrder() {
-        if (salesAmountCount==0) return String.format("%.2f", 0d);
-
+    public String getAverageValueString() {
         return String.format("%.2f", getAverageSales());
     }
 
@@ -59,9 +57,9 @@ public class Statistic {
      * @param statistic the new statistic to add to current one.
      * @return [Statistic] the summed statistic from current and specified one.
      */
-    public Statistic add(Statistic statistic) {
-        return new Statistic(totalSalesAmount+statistic.getTotalSalesAmount(),
-                             salesAmountCount+statistic.getSalesAmountCount());
+    public TotalAmount add(TotalAmount statistic) {
+        return new TotalAmount(value + statistic.getValue(),
+                             salesAmountCount + statistic.getSalesAmountCount());
     }
 
     /**
@@ -70,32 +68,33 @@ public class Statistic {
      * @param amount the amount to include in the next statistic calculation.
      * @return [Statistic] a new updated instance
      */
-    public Statistic add(Amount amount) {
-        return new Statistic(totalSalesAmount+amount.getValue(), salesAmountCount+1);
+    public TotalAmount add(Amount amount) {
+        return new TotalAmount(value +amount.getValue(), salesAmountCount+1);
     }
 
     private double getAverageSales() {
-        return totalSalesAmount/salesAmountCount;
+        if (salesAmountCount==0) return 0;
+        else return value / salesAmountCount;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Statistic statistic = (Statistic) o;
+        TotalAmount statistic = (TotalAmount) o;
         return salesAmountCount == statistic.salesAmountCount &&
-                Objects.equals(totalSalesAmount, statistic.totalSalesAmount);
+                Objects.equals(value, statistic.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(totalSalesAmount, salesAmountCount);
+        return Objects.hash(value, salesAmountCount);
     }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Statistic{");
-        sb.append("totalSalesAmount=").append(totalSalesAmount);
+        sb.append("totalSalesAmount=").append(value);
         sb.append(", salesAmountCount=").append(salesAmountCount);
         sb.append('}');
         return sb.toString();

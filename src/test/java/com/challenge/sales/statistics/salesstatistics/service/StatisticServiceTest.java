@@ -1,7 +1,7 @@
 package com.challenge.sales.statistics.salesstatistics.service;
 
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
-import com.challenge.sales.statistics.salesstatistics.domain.Statistic;
+import com.challenge.sales.statistics.salesstatistics.domain.TotalAmount;
 import com.challenge.sales.statistics.salesstatistics.repository.SalesRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +9,11 @@ import org.junit.Test;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +34,7 @@ public class StatisticServiceTest {
     }
 
     @Test
-    public void getStatisticsWhenNotEmpty() {
+    public void getRecentTotalAmount_whenNotEmpty() {
         //given
         Amount amount1 = new Amount(11d, Instant.now(clock).toEpochMilli());
         Amount amount2 = new Amount(9d, Instant.now(clock).toEpochMilli());
@@ -37,18 +42,33 @@ public class StatisticServiceTest {
         salesRepository.saveAmount(amount2);
 
         //when
-        Statistic response = statisticService.getStatistic();
+        TotalAmount response = statisticService.getRecentTotalAmount();
 
         //then
-        assertEquals("Should return correct statistics.", new Statistic(20d, 2), response);
+        assertEquals("Should return correct total amount.", new TotalAmount(20d, 2), response);
     }
 
     @Test
-    public void getStatisticsWhenEmpty() {
+    public void getRecentTotalAmount_whenEmpty() {
         //when
-        Statistic response = statisticService.getStatistic();
+        TotalAmount response = statisticService.getRecentTotalAmount();
 
         //then
-        assertEquals("Should return correct zero statistics.", new Statistic(0d, 0), response);
+        assertEquals("Should return correct zero total amount.", new TotalAmount(0d, 0), response);
+    }
+
+    @Test
+    public void getRecentTotalAmount_whenALotOfAmounts() {
+        //given
+        List<Amount> amountList = IntStream.range(0, 1_000_000)
+                .mapToObj(i -> new Amount(0.123_456_789_123_456_789d, Instant.now(clock).toEpochMilli()))
+                .collect(Collectors.toList());
+        amountList.forEach(amount -> salesRepository.saveAmount(amount));
+
+        //when
+        TotalAmount response = statisticService.getRecentTotalAmount();
+
+        //then
+        assertEquals("Should return correct total amount.", new TotalAmount(123_456.789_123_456_789d, 1_000_000), response);
     }
 }

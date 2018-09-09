@@ -1,7 +1,7 @@
 package com.challenge.sales.statistics.salesstatistics.service;
 
 import com.challenge.sales.statistics.salesstatistics.domain.Amount;
-import com.challenge.sales.statistics.salesstatistics.domain.Statistic;
+import com.challenge.sales.statistics.salesstatistics.domain.TotalAmount;
 import com.challenge.sales.statistics.salesstatistics.repository.SalesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,26 +33,30 @@ public class StatisticService {
     }
 
     /**
-     * Get statistics for recent sales amounts.
+     * Get total amount for recent sales amounts.
      *
-     * @return [Statistic] get recent statistics.
+     * @return {@link TotalAmount} get recent total amount.
      */
-    public Statistic getStatistic() {
-        List<Statistic> statisticList = salesRepository.onEachQueueExecute(this::getStatisticsFrom);
+    public TotalAmount getRecentTotalAmount() {
+        long recentTimeLimitMilli = getRecentTimeLimitMilli();
 
-        Statistic finalStatistic = statisticList.stream().reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
+        List<TotalAmount> totalAmountList = salesRepository.onEachQueueExecute(queue -> getStatisticsFrom(queue, recentTimeLimitMilli));
 
-        return Optional.ofNullable(finalStatistic)
-                .orElse(Statistic.ZERO);
+        TotalAmount totalAmount = totalAmountList.stream().reduce(TotalAmount.ZERO, TotalAmount::add, (a, b) -> null);
+
+        return Optional.ofNullable(totalAmount)
+                .orElse(TotalAmount.ZERO);
     }
 
-    private Statistic getStatisticsFrom(Queue<Amount> saleAmounts) {
-        Instant now = Instant.now(clock);
-        long fromCreatedAt = now.minusSeconds(periodInSec).toEpochMilli();
-
+    private TotalAmount getStatisticsFrom(Queue<Amount> saleAmounts, long fromCreatedAtMilli) {
         return saleAmounts.stream()
-                .filter(amount -> amount.isAfter(fromCreatedAt))
-                .reduce(Statistic.ZERO, Statistic::add, (a, b) -> null);
+                .filter(amount -> amount.isAfter(fromCreatedAtMilli))
+                .reduce(TotalAmount.ZERO, TotalAmount::add, (a, b) -> null);
     }
 
+    private long getRecentTimeLimitMilli() {
+        return Instant.now(clock)
+                .minusSeconds(periodInSec)
+                .toEpochMilli();
+    }
 }

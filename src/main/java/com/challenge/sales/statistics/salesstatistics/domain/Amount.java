@@ -46,11 +46,6 @@ public class Amount {
         return value;
     }
 
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
