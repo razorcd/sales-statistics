@@ -106,3 +106,14 @@ A scheduler will log the count of recent stored amounts just for demo purpose:
 ```
 Count recent sales amounts currently stored: 1536122
 ```
+
+
+# Live statistics
+
+![](sales_rapidoid.jpg)
+- 15000 requests/sec from JMeter, 
+- 870_000 valid sale amounts stored in memory
+- old sales amount cleanup every 1 second
+- HEAP size ~128Mb
+- app size 293Mb (jvm, rapidoid, other dependencies and app)
+- CPU is an i7
