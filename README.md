@@ -75,6 +75,10 @@ Execute in order:
 - `java -Xmx128m -jar target/salesstats-cristiand-0.0.1-SNAPSHOT.jar` to start app with 128Mb max HEAP size
 - `./jmeter -n -t [path-to-file]/stressTest_jmeter.jmx` to start headless JMeter and shoot millions requests to app API 
 
+#### Docker:
+- `mvn clean pakcage` to build `jar`
+- `docker build --tag cristiand/sales-statistics .` to build docker image
+- `docker run --name sales-statistics -p 8080:8080 cristiand/sales-statistics:latest` to start docker container
 
 ## Requests
 

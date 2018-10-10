@@ -24,7 +24,8 @@ public class StatisticsController {
      */
     @GetMapping
     public TotalAmount getStatistics() {
-        return statisticService.getRecentTotalAmount();
+        return null;
+//        return statisticService.getRecentTotalAmount();
     }
 
 }

@@ -26,11 +26,12 @@ public class SalesController {
      *
      * @param salesAmount the sales amount to add.
      */
-    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, params = {"sales_amount!="})
+    @PostMapping
+//    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, params = {"sales_amount!="})
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void postSalesAmount(@RequestParam(value = "sales_amount") double salesAmount) {
-        long salesAmountCent = mapAmountToCents(salesAmount);
-        salesService.store(salesAmountCent);
+    public void postSalesAmount() {
+//        long salesAmountCent = mapAmountToCents(salesAmount);
+//        salesService.store(salesAmountCent);
     }
 
     private long mapAmountToCents(double salesAmount) {

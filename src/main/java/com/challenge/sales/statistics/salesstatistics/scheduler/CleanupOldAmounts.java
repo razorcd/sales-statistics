@@ -25,9 +25,9 @@ public class CleanupOldAmounts {
         this.salesService = salesService;
     }
 
-    @Scheduled(fixedRate = 1000)
+//    @Scheduled(fixedRate = 1000)
     public void cleanOldAmounts() {
         salesService.cleanOldSales();
-        LOGGER.info("Count recent sales amounts currently stored: {}", salesService.getSalesCount());
+        LOGGER.debug("Count recent sales amounts currently stored: {}", salesService.getSalesCount());
     }
 }
